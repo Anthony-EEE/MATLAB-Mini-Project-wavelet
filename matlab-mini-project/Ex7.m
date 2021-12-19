@@ -18,7 +18,7 @@ num_shifts=Len/T;
 %%first: create a stream of Diracs with K=2;
 K=2;
 % only dB5 with vanishing moment 5 can vanish the maximum polynomial degree 4
-N=6;% N=5,6,7,8,9>2K=4
+N=7;% N=5,6,7,8,9>2K=4
 % maximum degree of polynomials
 Max_d=N-1;
 
@@ -56,12 +56,12 @@ coefficients=Kernels*polynomials'/T;
 tau=y_n*coefficients;
 display(tau);
 % apply Gaussian noise with different variance to tau
-% variance =1e9;
+variance =1e5;
 % 
-% %Gaussian noise
-% Gaussion_noise = sqrt(variance).*randn(1, N);
-% sm = tau + Gaussion_noise;
-sm = tau;
+%Gaussian noise
+Gaussion_noise = sqrt(variance).*randn(1, N);
+sm = tau + Gaussion_noise;
+%sm = tau;
 %because we use dB5,6,7, so S is 
 S=ones(N-K,K+1); 
 for i=1:(N-K)
@@ -69,18 +69,18 @@ for i=1:(N-K)
 end
 S1=S;
 
+
 %only using Total least-squares approach(TLS)
 %SVD to find h
 [U, lamda, V]=svd(S);
 
-
 % [U, lamda, V]=svd(S);
-% display(size(V))
-% lamda_new=zeros(size(lamda));
-% %Using Cadzow to update S
+display(size(V))
+lamda_new=zeros(size(lamda));
+%Using Cadzow to update S
 % for i=1:40
 % 
-%     %keep the k largest diagonal coefficients of lamda to define new lamda
+%     %keep the K largest diagonal coefficients of lamda to define new lamda
 %     lamda_new(1:2,1:2)=lamda(1:2,1:2);
 %     %reconstruct S
 %     S=U*lamda_new*V';
@@ -110,6 +110,7 @@ S1=S;
 
 %SVD to find h
 h=V(:,end);
+%h=V(2:end,end)/V(1,end);
 
 
 %z-transform to get H(z) and to find t_k
@@ -126,4 +127,7 @@ display(round(t_k, 8));
 t_k=t_k.*T;
 display(round(t_k));
 display(round(a_k, 2));
+
+figure(1);
+scatter(t_k,a_k)
 
