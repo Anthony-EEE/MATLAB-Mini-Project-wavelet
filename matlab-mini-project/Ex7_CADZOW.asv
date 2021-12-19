@@ -24,8 +24,8 @@ Max_d=N-1;
 
 %dirac function with locations 1000 and 2000 and amplitudes 10, 20.
 Dirac=zeros(1, 2048);
-Dirac(1000)=10;
-Dirac(2000)=20;
+Dirac(1000)=150;
+Dirac(2000)=200;
 
 
 %second: sampling from x(t) to y[n] 
@@ -56,7 +56,7 @@ coefficients=Kernels*polynomials'/T;
 tau=y_n*coefficients;
 display(tau);
 % apply Gaussian noise with different variance to tau
-variance =1e5;
+variance =1e2;
 % 
 %Gaussian noise
 Gaussion_noise = sqrt(variance).*randn(1, N);
@@ -70,14 +70,12 @@ end
 S1=S;
 
 
-%only using Total least-squares approach(TLS)
-%SVD to find h
+
+
+%SVD to find lamda
 [U, lamda, V]=svd(S);
 
-% [U, lamda, V]=svd(S);
-display(size(V))
-lamda_new=zeros(size(lamda));
-%Using Cadzow to update S
+% %Using Cadzow to update S
 % for i=1:40
 % 
 %     %keep the K largest diagonal coefficients of lamda to define new lamda
@@ -108,15 +106,16 @@ lamda_new=zeros(size(lamda));
 %     [U, lamda, V]=svd(S);
 % end
 
-%SVD to find h
-h=V(:,end);
-%h=V(2:end,end)/V(1,end);
+
+%h=V(:,end);
+h=V(2:end,end)/V(1,end);
 
 
 %z-transform to get H(z) and to find t_k
 
 H_z=1+h(1)*z^(-1)+h(2)*z^(-2);
 t_k=solve(H_z);
+t_k=flip(t_k);
 
 %%3. Using Vandermonde system to find weight a_k
 %[1,1;t_0,t_1][a_0;a_1]=[tau0;tau1]
@@ -125,6 +124,7 @@ BB = [sm(1);sm(2)];
 a_k= mldivide(AA,BB);
 display(round(t_k, 8));
 t_k=t_k.*T;
+
 display(round(t_k));
 display(round(a_k, 2));
 
